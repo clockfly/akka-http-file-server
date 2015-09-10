@@ -122,6 +122,7 @@ object Build extends sbt.Build {
         "com.typesafe.akka" %% "akka-http-experimental" % "1.0",
         "com.typesafe.akka" %% "akka-http-core-experimental" % "1.0",
         "com.typesafe.akka" %% "akka-stream-experimental" % "1.0",
+        "com.typesafe.akka" %% "akka-http-spray-json-experimental"% "1.0",
         "com.typesafe.akka" %% "akka-kernel" % akkaVersion,
         "com.github.intel-hadoop" %% "gearpump-shaded-akka-kryo" % kryoVersion,
         "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",

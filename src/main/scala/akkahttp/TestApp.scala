@@ -6,34 +6,43 @@ import akka.actor.ActorSystem
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.concurrent.Await
+import scala.io.Source
 
 object TestApp extends App {
 
-  val testConf: Config = ConfigFactory.parseString("""
-    akka.loglevel = INFO
-    akka.http.client.parsing.max-content-length = 2048m
-    akka.log-dead-letters = off""")
+  val testConf: Config = ConfigFactory.load()
 
   implicit val system = ActorSystem("ServerTest", testConf)
   implicit val dispatcher = system.dispatcher
+  val host = "127.0.0.1"
+  val port = 9112
 
-  val server = new FileServer(system, 9112)
+  val server = new FileServer(system, host, 9112)
 
   //start file server
   val binding = server.start
+  val client = new FileServer.Client(system, host, port)
 
-  val uri = server.uploadAddress
+  // upload the file
+  val testFile = new File(getClass.getResource("/testfile.txt").toURI())
+  val fileHandler = client.upload(testFile)
 
-  val client = new FileServer.Client(system)
+  //download the file
+  val target = File.createTempFile("testapp_download", "")
+  val future = fileHandler.flatMap{handler =>
+    client.download(handler, target)
+  }
 
-  client.download
+  import scala.concurrent.duration._
+  Await.result(future, 10 seconds)
 
+  // check the file content.
+  Source.fromFile(testFile).foreach{
+    print
+  }
 
-  //val future = client.upload(new File("C:\\Users\\xzhong10\\Downloads\\ideaIU-14.1.4.exe"))
-  //import scala.concurrent.duration._
-  //println(Await.result(future, 10 seconds))
-
-  //binding.foreach(_.unbind())
-
+  println()
+  // now you can try to browser http://127.0.0.1:9112/
+  println(s"Browser http://${host}:${port} to test download and upload")
   system.awaitTermination()
 }
