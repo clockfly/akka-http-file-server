@@ -38,10 +38,8 @@ object FileDirective {
 
   def uploadFile: Directive1[Map[Name, FileInfo]] = {
     Directive[Tuple1[Map[Name, FileInfo]]] { inner =>
-      extractMaterializer { mat =>
-        extractExecutionContext { ec =>
-          implicit val materializer = mat
-          implicit val executionContext = ec
+      extractMaterializer {implicit mat =>
+        extractExecutionContext {implicit ec =>
           uploadFileImpl(mat, ec) { filesFuture =>
             ctx => {
               filesFuture.map(map => inner(Tuple1(map))).flatMap(route => route(ctx))
