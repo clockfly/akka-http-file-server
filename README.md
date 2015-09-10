@@ -25,4 +25,5 @@ We create a akka-http DSL for this, so it is super easy to create a http file se
 ```
 
 ## Used by
- Project Gearpump(Big data streaming engine over Akka):  https://github.com/gearpump/gearpump
+Big data streaming engine over Akka:
+Project Gearpump:  https://github.com/gearpump/gearpump
