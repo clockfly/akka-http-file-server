@@ -9,11 +9,10 @@ object Build extends sbt.Build {
 
   val akkaVersion = "2.3.6"
   val slf4jVersion = "1.7.7"
-  val crossScalaVersionNumbers = Seq("2.10.5", "2.11.5")
-  val scalaVersionNumber = crossScalaVersionNumbers.last
-
+  
   val commonSettings = Seq(jacoco.settings:_*) ++ sonatypeSettings  ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
     Seq(
+      scalaVersion := "2.11.5",
       resolvers ++= Seq(
         "patriknw at bintray" at "http://dl.bintray.com/patriknw/maven",
         "maven-repo" at "http://repo.maven.apache.org/maven2",
@@ -21,8 +20,7 @@ object Build extends sbt.Build {
         "maven2-repo" at "http://mvnrepository.com/artifact",
         "sonatype" at "https://oss.sonatype.org/content/repositories/releases",
         "bintray/non" at "http://dl.bintray.com/non/maven"
-      ),
-      addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
+      )
     )
 
   val coreDependencies = Seq(
@@ -38,12 +36,7 @@ object Build extends sbt.Build {
       "com.typesafe.akka" %% "akka-stream-experimental" % "1.0",
       "com.typesafe.akka" %% "akka-http-spray-json-experimental"% "1.0",
       "com.typesafe.akka" %% "akka-kernel" % akkaVersion
-    ),
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-    libraryDependencies ++= (
-      if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.1.0-M5")
-      else List("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3")
-      )
+    )
   )
 
   lazy val root = Project(
